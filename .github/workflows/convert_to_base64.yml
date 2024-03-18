@@ -3,7 +3,6 @@ name: Daily Base64 Conversion
 on:
   schedule:
     - cron: "45 1,11 * * *"
-  workflow_dispatch:
 
 jobs:
   convert_to_base64:
@@ -11,14 +10,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-          
+
+      - name: Install PyGithub
+        run: pip install PyGithub
+
       - name: Install requests module
         run: pip install requests
-        
+
       - name: Run conversion script
         run: python convert_to_base64.py
