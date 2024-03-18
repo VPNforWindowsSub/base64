@@ -3,7 +3,7 @@ name: Daily Base64 Conversion
 on:
   schedule:
     - cron: "45 1,11 * * *"
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   convert_to_base64:
