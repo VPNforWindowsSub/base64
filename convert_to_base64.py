@@ -33,5 +33,5 @@ def convert_to_base64(url, github_token):
 
 if __name__ == "__main__":
     url = "https://raw.githubusercontent.com/dimzon/scaling-sniffle/main/all-sort.txt"
-    github_token = "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" 
+    github_token = "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" 
     convert_to_base64(url, github_token)
