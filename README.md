@@ -1,0 +1,1 @@
+[![Daily Base64 Conversion](https://github.com/VPNforWindowsSub/base64/actions/workflows/convert_to_base64.yml/badge.svg)](https://github.com/VPNforWindowsSub/base64/actions/workflows/convert_to_base64.yml)
