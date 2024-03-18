@@ -2,7 +2,7 @@ name: Base64 Conversion
 
 on:
   schedule:
-    - cron: "45 1,11 * * *"
+    - cron: "0 3,13 * * *"
   workflow_dispatch:
 
 jobs:
