@@ -1,6 +1,5 @@
 import base64
 import requests
-import os
 
 def convert_to_base64(url):
     # Download text file from the URL
@@ -10,12 +9,10 @@ def convert_to_base64(url):
         # Encode text to base64
         encoded_bytes = base64.b64encode(text.encode('utf-8'))
         encoded_text = encoded_bytes.decode('utf-8')
-        # Save base64-encoded text to base64.txt
-        file_path = 'base64.txt'
-        with open(file_path, 'w') as f:
+        # Save base64-encoded text to base64.txt in the repository's root directory
+        with open('base64.txt', 'w') as f:
             f.write(encoded_text)
-        print(f"Conversion complete. File saved to: {file_path}")
-        print(f"Current working directory: {os.getcwd()}")
+        print("Conversion complete.")
     else:
         print("Failed to fetch data from URL.")
 
