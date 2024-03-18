@@ -22,3 +22,6 @@ jobs:
         
       - name: Run conversion script
         run: python convert_to_base64.py
+        
+      - name: Move base64.txt to repository
+        run: mv base64.txt $GITHUB_WORKSPACE/base64.txt
