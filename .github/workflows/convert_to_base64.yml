@@ -28,8 +28,12 @@ jobs:
       - name: Check if base64.txt has changed
         id: check_changes
         run: |
-          if git diff --quiet base64.txt; then
-            echo "::set-output name=changes::false"
+          if [ -f "base64.txt" ]; then
+            if git diff --quiet base64.txt; then
+              echo "::set-output name=changes::false"
+            else
+              echo "::set-output name=changes::true"
+            fi
           else
             echo "::set-output name=changes::true"
           fi
