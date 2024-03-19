@@ -25,7 +25,18 @@ jobs:
           python -m pip install --upgrade pip
           python convert_to_base64.py
           
+      - name: Check if base64.txt has changed
+        id: check_changes
+        run: |
+          if git diff --quiet base64.txt; then
+            echo "::set-output name=changes::false"
+          else
+            echo "::set-output name=changes::true"
+          fi
+        continue-on-error: true
+
       - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'true'
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
