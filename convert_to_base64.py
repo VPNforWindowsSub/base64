@@ -37,6 +37,7 @@ if __name__ == "__main__":
     urls = [
         "https://raw.githubusercontent.com/dimzon/scaling-sniffle/main/all-sort.txt",
         "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/refs/heads/main/V2RAY_SUB.txt",
-        "https://raw.githubusercontent.com/Space-00/V2ray-configs/refs/heads/main/config.txt"
+        "https://raw.githubusercontent.com/Space-00/V2ray-configs/refs/heads/main/config.txt",
+        "https://raw.githubusercontent.com/MrMohebi/xray-proxy-grabber-telegram/master/collected-proxies/row-url/all.txt"
     ]
     convert_multiple_to_base64(urls)
