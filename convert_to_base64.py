@@ -40,6 +40,7 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/Space-00/V2ray-configs/refs/heads/main/config.txt",
         "https://raw.githubusercontent.com/MrMohebi/xray-proxy-grabber-telegram/master/collected-proxies/row-url/all.txt",
         "https://raw.githubusercontent.com/asakura42/vss/master/output.txt",
-        "https://raw.githubusercontent.com/qjlxg/ss/refs/heads/master/list_raw.txt"
+        "https://raw.githubusercontent.com/qjlxg/ss/refs/heads/master/list_raw.txt",
+        "https://raw.githubusercontent.com/snaCW/Config/refs/heads/main/config.txt"
     ]
     convert_multiple_to_base64(urls)
