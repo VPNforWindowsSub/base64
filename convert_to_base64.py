@@ -47,6 +47,8 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/asdsadsddas123/freev2raynode/refs/heads/main/README.md",
         "https://raw.githubusercontent.com/asdsadsddas123/fanqiang/refs/heads/main/README.md",
         "https://raw.githubusercontent.com/MrMohebi/xray-proxy-grabber-telegram/refs/heads/master/collected-proxies/row-url/actives.txt",
+        "https://raw.githubusercontent.com/gfpcom/free-proxy-list/refs/heads/main/list/ss.txt",
+        "https://raw.githubusercontent.com/gfpcom/free-proxy-list/refs/heads/main/list/vmess.txt",
         "https://raw.githubusercontent.com/snaCW/Config/refs/heads/main/config.txt"
     ]
     convert_multiple_to_base64(urls)
