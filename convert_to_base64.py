@@ -51,6 +51,7 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/gfpcom/free-proxy-list/refs/heads/main/list/ss.txt",
         "https://raw.githubusercontent.com/gfpcom/free-proxy-list/refs/heads/main/list/vmess.txt",
         "https://raw.githubusercontent.com/LalatinaHub/Mineral/refs/heads/master/result/nodes",
-        "https://raw.githubusercontent.com/snaCW/Config/refs/heads/main/config.txt"
+        "https://raw.githubusercontent.com/snaCW/Config/refs/heads/main/config.txt",
+        "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/refs/heads/main/configtg.txt"
     ]
     convert_multiple_to_base64(urls)
