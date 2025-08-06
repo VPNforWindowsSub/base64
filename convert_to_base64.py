@@ -56,6 +56,7 @@ def process_and_write_chunks(lines):
 
     for line in lines:
         line_size = len(line.encode('utf-8')) + 1
+        
         if current_chunk_size + line_size > TARGET_RAW_SIZE and current_chunk_lines:
             chunks.append("\n".join(current_chunk_lines))
             current_chunk_lines = [line]
@@ -110,4 +111,5 @@ if __name__ == "__main__":
     cleanup_old_files()
     all_lines = fetch_content_lines(urls)
     process_and_write_chunks(all_lines)
+
     print("\nProcess complete.")
