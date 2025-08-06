@@ -1,37 +1,88 @@
 import base64
 import requests
 import os
+import glob
 
-def convert_multiple_to_base64(urls):
-    combined_text = ""
+MAX_FILE_SIZE_MB = 2
+OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
+
+MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
+
+def fetch_content_lines(urls):
+    all_lines = []
+    with requests.Session() as session:
+        for i, url in enumerate(urls, 1):
+            try:
+                print(f"[{i}/{len(urls)}] Fetching from: {url}")
+                response = session.get(url, timeout=15)
+                response.raise_for_status()
+                
+                lines = [line for line in response.text.splitlines() if line.strip()]
+                if lines:
+                    all_lines.extend(lines)
+                else:
+                    print(f"  -> Warning: No content found at {url}")
+
+            except requests.exceptions.RequestException as e:
+                print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
     
-    for url in urls:
-        # Download text file from the URL
-        response = requests.get(url)
-        if response.status_code == 200:
-            combined_text += response.text + "\n"  
+    return all_lines
+
+def cleanup_old_files():
+    print("\nCleaning up old output files...")
+    old_files = glob.glob(OUTPUT_FILENAME_TEMPLATE.format('*'))
+    if not old_files:
+        print("No old files to clean up.")
+        return
+        
+    for f in old_files:
+        try:
+            os.remove(f)
+            print(f"  -> Deleted {f}")
+        except OSError as e:
+            print(f"  -> Error deleting file {f}: {e}")
+
+def process_and_write_chunks(lines):
+    if not lines:
+        print("\nNo content to process. Exiting.")
+        return
+
+    print(f"\nTotal lines fetched: {len(lines)}. Grouping into chunks...")
+    
+    chunks = []
+    current_chunk_lines = []
+    current_chunk_size = 0
+
+    for line in lines:
+        line_size = len(line.encode('utf-8')) + 1
+        if current_chunk_size + line_size > TARGET_RAW_SIZE and current_chunk_lines:
+            chunks.append("\n".join(current_chunk_lines))
+            current_chunk_lines = [line]
+            current_chunk_size = line_size
         else:
-            print(f"Failed to fetch data from URL: {url}")
+            current_chunk_lines.append(line)
+            current_chunk_size += line_size
 
-    # Encode combined text to base64
-    encoded_bytes = base64.b64encode(combined_text.encode('utf-8'))
-    encoded_text = encoded_bytes.decode('utf-8')
+    if current_chunk_lines:
+        chunks.append("\n".join(current_chunk_lines))
 
-    # Check if content needs updating
-    needs_update = True
-    if os.path.exists('base64.txt'):
-        with open('base64.txt', 'r') as f:
-            existing_content = f.read()
-            if encoded_text == existing_content:
-                needs_update = False
+    print(f"Content has been split into {len(chunks)} chunks.")
+    print("Encoding and saving files...")
 
-    # Save base64-encoded text (only if changed)
-    if needs_update:
-        with open('base64.txt', 'w') as f:
-            f.write(encoded_text)
-        print("Conversion complete and changes saved.")
-    else:
-        print("No changes detected.")
+    for i, chunk_text in enumerate(chunks, 1):
+        encoded_bytes = base64.b64encode(chunk_text.encode('utf-8'))
+        encoded_text = encoded_bytes.decode('utf-8')
+        
+        filename = OUTPUT_FILENAME_TEMPLATE.format(i)
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(encoded_text)
+            
+            final_size_kb = os.path.getsize(filename) / 1024
+            print(f"  -> Saved {filename} ({final_size_kb:.2f} KB)")
+        except IOError as e:
+            print(f"  -> Error: Could not write to file {filename}. Reason: {e}")
 
 if __name__ == "__main__":
     urls = [
@@ -55,4 +106,8 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/refs/heads/main/configtg.txt",
         "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/V2Ray-Config-By-EbraSha-All-Type.txt"
     ]
-    convert_multiple_to_base64(urls)
+    
+    cleanup_old_files()
+    all_lines = fetch_content_lines(urls)
+    process_and_write_chunks(all_lines)
+    print("\nProcess complete.")
