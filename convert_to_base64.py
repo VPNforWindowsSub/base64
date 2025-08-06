@@ -3,7 +3,7 @@ import requests
 import os
 import glob
 
-MAX_FILE_SIZE_MB = 2
+MAX_FILE_SIZE_MB = 1
 OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
 
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
