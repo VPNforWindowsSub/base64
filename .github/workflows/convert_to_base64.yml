@@ -1,37 +1,41 @@
 name: Base64 Conversion
 
 on:
- schedule:
-  - cron: "0 10,23 * * *"
- workflow_dispatch:
+  schedule:
+    - cron: "0 10,23 * * *"
+  workflow_dispatch:
 
 jobs:
- convert_to_base64:
-  runs-on: ubuntu-latest
-  steps:
-   - name: Checkout repository
-     uses: actions/checkout@v2
+  convert_to_base64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # It's good practice to use the latest major version
 
-   - name: Set up Python
-     uses: actions/setup-python@v2
-     with:
-       python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v5 # It's good practice to use the latest major version
+        with:
+          python-version: '3.x'
 
-   - name: Install requests module
-     run: pip install requests
+      - name: Install dependencies
+        run: pip install requests
 
-   - name: Run conversion script
-     run: |
-       python -m pip install --upgrade pip
-       python convert_to_base64.py
+      - name: Run conversion script
+        run: python convert_to_base64.py
 
-   - name: Commit and push changes (only if necessary)
-     if: ${{ always() }}  # Always run this step, even on failure
-     run: |
-       git config --global user.email "actions@github.com"
-       git config --global user.name "GitHub Actions"
-       git add base64.txt
-       if [[ -n $(git status -s base64.txt) ]]; then  # Check for changes
-         git commit -m "Update base64.txt"
-         git push
-       fi
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+          # Add all generated base64 files (new, modified, and deleted)
+          git add base64_*.txt
+          
+          # Check if there are any changes to commit.
+          # `git status --porcelain` is a reliable way to check for any file changes.
+          if [[ -n $(git status --porcelain) ]]; then
+            git commit -m "Update Base64 subscription files"
+            git push
+          else
+            echo "No changes to commit."
+          fi
