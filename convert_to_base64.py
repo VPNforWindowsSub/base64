@@ -2,14 +2,17 @@ import base64
 import requests
 import os
 import glob
-import binascii
+import binascii # Needed for specific Base64 errors
 
+# --- Configuration ---
 MAX_FILE_SIZE_MB = 1
 OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
 
+# --- Calculated Constants ---
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 # Base64 encoding increases size by ~33%, so we target 3/4 of the max size for the raw text.
 TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
+
 
 def fetch_content_lines(plain_text_urls, base64_urls):
     """
@@ -63,6 +66,7 @@ def fetch_content_lines(plain_text_urls, base64_urls):
 
     return all_lines
 
+
 def cleanup_old_files():
     print("\nCleaning up old output files...")
     old_files = glob.glob(OUTPUT_FILENAME_TEMPLATE.format('*'))
@@ -76,6 +80,7 @@ def cleanup_old_files():
             print(f"  -> Deleted {f}")
         except OSError as e:
             print(f"  -> Error deleting file {f}: {e}")
+
 
 def process_and_write_chunks(lines):
     if not lines:
@@ -120,7 +125,11 @@ def process_and_write_chunks(lines):
         except IOError as e:
             print(f"  -> Error: Could not write to file {filename}. Reason: {e}")
 
+
+# This is the main execution block.
+# All code inside this block MUST be indented.
 if __name__ == "__main__":
+    
     urls = [
         "https://raw.githubusercontent.com/dimzon/scaling-sniffle/main/all-sort.txt",
         "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/refs/heads/main/V2RAY_SUB.txt",
@@ -157,6 +166,7 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/Surfboardv2ray/Proxy-sorter/main/submerge/converted.txt"
     ]
     
+    # These function calls are correctly indented inside the 'if' block.
     cleanup_old_files()
     all_lines = fetch_content_lines(plain_text_urls, base64_urls)
     process_and_write_chunks(all_lines)
