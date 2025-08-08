@@ -109,7 +109,8 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/all_configs.txt",
         "https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/main/config.txt",
         "https://raw.githubusercontent.com/nyeinkokoaung404/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt",
-        "https://raw.githubusercontent.com/SonzaiEkkusu/V2RayDumper/refs/heads/main/config.txt"
+        "https://raw.githubusercontent.com/SonzaiEkkusu/V2RayDumper/refs/heads/main/config.txt",
+        "https://raw.githubusercontent.com/theGreatPeter/v2rayNodes/refs/heads/main/nodes.txt"
     ]
     
     cleanup_old_files()
