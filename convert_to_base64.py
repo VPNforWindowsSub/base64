@@ -154,7 +154,8 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_vless.txt",
         "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_vmess.txt",
         "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_ss.txt",
-        "https://raw.githubusercontent.com/Surfboardv2ray/Proxy-sorter/main/submerge/converted.txt"
+        "https://raw.githubusercontent.com/Surfboardv2ray/Proxy-sorter/main/submerge/converted.txt",
+        "https://raw.githubusercontent.com/VPNforWindowsSub/base64/refs/heads/main/base64file.txt"
     ]
     
     cleanup_old_files()
