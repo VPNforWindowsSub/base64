@@ -105,7 +105,8 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/LalatinaHub/Mineral/refs/heads/master/result/nodes",
         "https://raw.githubusercontent.com/snaCW/Config/refs/heads/main/config.txt",
         "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/refs/heads/main/configtg.txt",
-        "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/V2Ray-Config-By-EbraSha-All-Type.txt"
+        "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/V2Ray-Config-By-EbraSha-All-Type.txt",
+        "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/all_configs.txt"
     ]
     
     cleanup_old_files()
