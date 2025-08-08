@@ -145,7 +145,9 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/main/config.txt",
         "https://raw.githubusercontent.com/nyeinkokoaung404/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt",
         "https://raw.githubusercontent.com/SonzaiEkkusu/V2RayDumper/refs/heads/main/config.txt",
-        "https://raw.githubusercontent.com/theGreatPeter/v2rayNodes/refs/heads/main/nodes.txt"
+        "https://raw.githubusercontent.com/theGreatPeter/v2rayNodes/refs/heads/main/nodes.txt",
+        "https://raw.githubusercontent.com/SamanGho/v2ray_collector/refs/heads/main/v2tel_links1.txt",
+        "https://raw.githubusercontent.com/SamanGho/v2ray_collector/refs/heads/main/v2tel_links2.txt"
     ]
     
     base64_urls = [
