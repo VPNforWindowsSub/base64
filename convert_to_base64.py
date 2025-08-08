@@ -1,33 +1,8 @@
-Of course. That's a very important and insightful question.
-
-If you feed already-encoded Base64 data into a script that then Base64-encodes it again, the final output will be double-encoded, which will be unusable by any client software.
-
-The solution is exactly as you suggested: we need to handle the two types of links differently. The script will:
-
-Fetch content from regular (plain text) links.
-
-Fetch content from Base64-encoded links and decode it back to plain text.
-
-Combine all the resulting plain text lines into one master list.
-
-Proceed with the original logic of chunking and re-encoding this unified master list.
-
-This ensures all content is treated equally before the final chunking and encoding step, preventing any double-encoding problems.
-
-Here is the fully edited Python script with the new logic implemented.
-
-Edited Python Script
-code
-Python
-download
-content_copy
-expand_less
-
 import base64
 import requests
 import os
 import glob
-import binascii # Needed for specific Base64 errors
+import binascii
 
 MAX_FILE_SIZE_MB = 1
 OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
@@ -176,7 +151,8 @@ if __name__ == "__main__":
     base64_urls = [
         "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_vless.txt",
         "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_vmess.txt",
-        "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_ss.txt"
+        "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_ss.txt",
+        "https://raw.githubusercontent.com/Surfboardv2ray/Proxy-sorter/main/submerge/converted.txt"
     ]
     
     cleanup_old_files()
