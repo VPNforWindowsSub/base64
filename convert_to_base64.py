@@ -1,20 +1,55 @@
+Of course. That's a very important and insightful question.
+
+If you feed already-encoded Base64 data into a script that then Base64-encodes it again, the final output will be double-encoded, which will be unusable by any client software.
+
+The solution is exactly as you suggested: we need to handle the two types of links differently. The script will:
+
+Fetch content from regular (plain text) links.
+
+Fetch content from Base64-encoded links and decode it back to plain text.
+
+Combine all the resulting plain text lines into one master list.
+
+Proceed with the original logic of chunking and re-encoding this unified master list.
+
+This ensures all content is treated equally before the final chunking and encoding step, preventing any double-encoding problems.
+
+Here is the fully edited Python script with the new logic implemented.
+
+Edited Python Script
+code
+Python
+download
+content_copy
+expand_less
+
 import base64
 import requests
 import os
 import glob
+import binascii # Needed for specific Base64 errors
 
 MAX_FILE_SIZE_MB = 1
 OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
 
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+# Base64 encoding increases size by ~33%, so we target 3/4 of the max size for the raw text.
 TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
 
-def fetch_content_lines(urls):
+def fetch_content_lines(plain_text_urls, base64_urls):
+    """
+    Fetches content from two lists of URLs.
+    - Plain text URLs are read as is.
+    - Base64 URLs are decoded first.
+    Returns a single, unified list of plain text lines.
+    """
     all_lines = []
     with requests.Session() as session:
-        for i, url in enumerate(urls, 1):
+        # --- Process 1: Plain Text URLs ---
+        print("\n--- Fetching Plain Text URLs ---")
+        for i, url in enumerate(plain_text_urls, 1):
             try:
-                print(f"[{i}/{len(urls)}] Fetching from: {url}")
+                print(f"[{i}/{len(plain_text_urls)}] Fetching from: {url}")
                 response = session.get(url, timeout=15)
                 response.raise_for_status()
                 
@@ -26,7 +61,31 @@ def fetch_content_lines(urls):
 
             except requests.exceptions.RequestException as e:
                 print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
-    
+
+        # --- Process 2: Pre-encoded Base64 URLs ---
+        print("\n--- Fetching and Decoding Base64 URLs ---")
+        for i, url in enumerate(base64_urls, 1):
+            try:
+                print(f"[{i}/{len(base64_urls)}] Fetching from: {url}")
+                response = session.get(url, timeout=15)
+                response.raise_for_status()
+                
+                # The content is Base64, so we must decode it first.
+                b64_content = response.text.strip()
+                decoded_bytes = base64.b64decode(b64_content)
+                decoded_text = decoded_bytes.decode('utf-8')
+
+                lines = [line for line in decoded_text.splitlines() if line.strip()]
+                if lines:
+                    all_lines.extend(lines)
+                else:
+                    print(f"  -> Warning: Decoded content was empty for {url}")
+
+            except requests.exceptions.RequestException as e:
+                print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
+            except (binascii.Error, UnicodeDecodeError) as e:
+                print(f"  -> Error: Failed to decode Base64 content from {url}. It might not be valid Base64. Reason: {e}")
+
     return all_lines
 
 def cleanup_old_files():
@@ -55,6 +114,7 @@ def process_and_write_chunks(lines):
     current_chunk_size = 0
 
     for line in lines:
+        # +1 for the newline character
         line_size = len(line.encode('utf-8')) + 1
         
         if current_chunk_size + line_size > TARGET_RAW_SIZE and current_chunk_lines:
@@ -113,8 +173,14 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/theGreatPeter/v2rayNodes/refs/heads/main/nodes.txt"
     ]
     
+    base64_urls = [
+        "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_vless.txt",
+        "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_vmess.txt",
+        "https://raw.githubusercontent.com/darknessm427/V2ray-Sub-Collector/refs/heads/main/Sort-By-Protocol/Darkness_ss.txt"
+    ]
+    
     cleanup_old_files()
-    all_lines = fetch_content_lines(urls)
+    all_lines = fetch_content_lines(plain_text_urls, base64_urls)
     process_and_write_chunks(all_lines)
 
     print("\nProcess complete.")
