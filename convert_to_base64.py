@@ -4,14 +4,12 @@ import os
 import glob
 import binascii # Needed for specific Base64 errors
 
-# --- Configuration ---
 MAX_FILE_SIZE_MB = 1
 OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
 
-# --- Calculated Constants ---
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+# Base64 encoding increases size by ~33%, so we target 3/4 of the max size for the raw text.
 TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
-
 
 def fetch_content_lines(plain_text_urls, base64_urls):
     """
@@ -29,11 +27,13 @@ def fetch_content_lines(plain_text_urls, base64_urls):
                 print(f"[{i}/{len(plain_text_urls)}] Fetching from: {url}")
                 response = session.get(url, timeout=15)
                 response.raise_for_status()
+                
                 lines = [line for line in response.text.splitlines() if line.strip()]
                 if lines:
                     all_lines.extend(lines)
                 else:
                     print(f"  -> Warning: No content found at {url}")
+
             except requests.exceptions.RequestException as e:
                 print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
 
@@ -44,14 +44,18 @@ def fetch_content_lines(plain_text_urls, base64_urls):
                 print(f"[{i}/{len(base64_urls)}] Fetching from: {url}")
                 response = session.get(url, timeout=15)
                 response.raise_for_status()
+                
+                # The content is Base64, so we must decode it first.
                 b64_content = response.text.strip()
                 decoded_bytes = base64.b64decode(b64_content)
                 decoded_text = decoded_bytes.decode('utf-8')
+
                 lines = [line for line in decoded_text.splitlines() if line.strip()]
                 if lines:
                     all_lines.extend(lines)
                 else:
                     print(f"  -> Warning: Decoded content was empty for {url}")
+
             except requests.exceptions.RequestException as e:
                 print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
             except (binascii.Error, UnicodeDecodeError) as e:
@@ -59,13 +63,13 @@ def fetch_content_lines(plain_text_urls, base64_urls):
 
     return all_lines
 
-
 def cleanup_old_files():
     print("\nCleaning up old output files...")
     old_files = glob.glob(OUTPUT_FILENAME_TEMPLATE.format('*'))
     if not old_files:
         print("No old files to clean up.")
         return
+        
     for f in old_files:
         try:
             os.remove(f)
@@ -73,18 +77,21 @@ def cleanup_old_files():
         except OSError as e:
             print(f"  -> Error deleting file {f}: {e}")
 
-
 def process_and_write_chunks(lines):
     if not lines:
         print("\nNo content to process. Exiting.")
         return
 
     print(f"\nTotal lines fetched: {len(lines)}. Grouping into chunks...")
+    
     chunks = []
     current_chunk_lines = []
     current_chunk_size = 0
+
     for line in lines:
+        # +1 for the newline character
         line_size = len(line.encode('utf-8')) + 1
+        
         if current_chunk_size + line_size > TARGET_RAW_SIZE and current_chunk_lines:
             chunks.append("\n".join(current_chunk_lines))
             current_chunk_lines = [line]
@@ -92,6 +99,7 @@ def process_and_write_chunks(lines):
         else:
             current_chunk_lines.append(line)
             current_chunk_size += line_size
+
     if current_chunk_lines:
         chunks.append("\n".join(current_chunk_lines))
 
@@ -101,18 +109,19 @@ def process_and_write_chunks(lines):
     for i, chunk_text in enumerate(chunks, 1):
         encoded_bytes = base64.b64encode(chunk_text.encode('utf-8'))
         encoded_text = encoded_bytes.decode('utf-8')
+        
         filename = OUTPUT_FILENAME_TEMPLATE.format(i)
         try:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(encoded_text)
+            
             final_size_kb = os.path.getsize(filename) / 1024
             print(f"  -> Saved {filename} ({final_size_kb:.2f} KB)")
         except IOError as e:
             print(f"  -> Error: Could not write to file {filename}. Reason: {e}")
 
-
-def main():
-    urls = [
+if __name__ == "__main__":
+    plain_text_urls = [
         "https://raw.githubusercontent.com/dimzon/scaling-sniffle/main/all-sort.txt",
         "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/refs/heads/main/V2RAY_SUB.txt",
         "https://raw.githubusercontent.com/Space-00/V2ray-configs/refs/heads/main/config.txt",
@@ -151,9 +160,5 @@ def main():
     cleanup_old_files()
     all_lines = fetch_content_lines(plain_text_urls, base64_urls)
     process_and_write_chunks(all_lines)
+
     print("\nProcess complete.")
-
-
-# This block ensures that the main() function is called only when the script is executed directly.
-if __name__ == "__main__":
-    main()
