@@ -28,11 +28,10 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # Add all generated base64 files (new, modified, and deleted)
-          git add base64_*.txt
+          # Stage all changes in the repository (new, modified, AND deleted files)
+          git add .
           
           # Check if there are any changes to commit.
-          # `git status --porcelain` is a reliable way to check for any file changes.
           if [[ -n $(git status --porcelain) ]]; then
             git commit -m "Update Base64 subscription files"
             git push
