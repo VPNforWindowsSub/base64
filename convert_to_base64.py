@@ -6,7 +6,7 @@ import binascii
 from datetime import datetime, timezone # Import datetime utilities
 
 MAX_FILE_SIZE_MB = 1
-OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
+OUTPUT_FILENAME_TEMPLATE = 'base64_{:03}.txt'
 
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
