@@ -2,17 +2,26 @@ import base64
 import requests
 import os
 import glob
-import binascii # Needed for specific Base64 errors
+import binascii
+from datetime import datetime, timezone # Import datetime utilities
 
 MAX_FILE_SIZE_MB = 1
-OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
+OUTPUT_FILENAME_TEMPLATE = 'base64_{:03}.txt'
 
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
 
+# ... (fetch_content_lines and cleanup_old_files functions remain the same) ...
 def fetch_content_lines(plain_text_urls, base64_urls):
+    """
+    Fetches content from two lists of URLs.
+    - Plain text URLs are read as is.
+    - Base64 URLs are decoded first.
+    Returns a single, unified list of plain text lines.
+    """
     all_lines = []
     with requests.Session() as session:
+        # --- Process 1: Plain Text URLs ---
         print("\n--- Fetching Plain Text URLs ---")
         for i, url in enumerate(plain_text_urls, 1):
             try:
@@ -29,6 +38,7 @@ def fetch_content_lines(plain_text_urls, base64_urls):
             except requests.exceptions.RequestException as e:
                 print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
 
+        # --- Process 2: Pre-encoded Base64 URLs ---
         print("\n--- Fetching and Decoding Base64 URLs ---")
         for i, url in enumerate(base64_urls, 1):
             try:
@@ -56,7 +66,8 @@ def fetch_content_lines(plain_text_urls, base64_urls):
 
 def cleanup_old_files():
     print("\nCleaning up old output files...")
-    old_files = glob.glob(OUTPUT_FILENAME_TEMPLATE.format('*'))
+    # This correctly finds both old (e.g., base64_1.txt) and new (base64_001.txt) formats.
+    old_files = glob.glob('base64_*.txt')
     if not old_files:
         print("No old files to clean up.")
         return
@@ -68,6 +79,7 @@ def cleanup_old_files():
         except OSError as e:
             print(f"  -> Error deleting file {f}: {e}")
 
+
 def process_and_write_chunks(lines):
     if not lines:
         print("\nNo content to process. Exiting.")
@@ -75,23 +87,33 @@ def process_and_write_chunks(lines):
 
     print(f"\nTotal lines fetched: {len(lines)}. Grouping into chunks...")
     
+    # --- START OF THE FIX ---
+    # Get the current time in a standard format to add to the files.
+    # This will be the same for all files in this single run.
+    generation_time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
+    timestamp_comment = f"# Generated on: {generation_time}"
+    
     chunks = []
-    current_chunk_lines = []
-    current_chunk_size = 0
+    current_chunk_lines = [timestamp_comment] # Start each chunk with the timestamp comment.
+    # Account for the size of the timestamp comment plus a newline.
+    current_chunk_size = len(timestamp_comment.encode('utf-8')) + 1
 
     for line in lines:
         # +1 for the newline character
         line_size = len(line.encode('utf-8')) + 1
         
-        if current_chunk_size + line_size > TARGET_RAW_SIZE and current_chunk_lines:
+        if current_chunk_size + line_size > TARGET_RAW_SIZE and len(current_chunk_lines) > 1:
+            # The len check ensures we don't create an empty file with only a timestamp.
             chunks.append("\n".join(current_chunk_lines))
-            current_chunk_lines = [line]
-            current_chunk_size = line_size
+            # Start the new chunk with the timestamp comment again.
+            current_chunk_lines = [timestamp_comment, line]
+            current_chunk_size = (len(timestamp_comment.encode('utf-8')) + 1) + line_size
         else:
             current_chunk_lines.append(line)
             current_chunk_size += line_size
+    # --- END OF THE FIX ---
 
-    if current_chunk_lines:
+    if len(current_chunk_lines) > 1: # Only add the chunk if it has more than just the timestamp.
         chunks.append("\n".join(current_chunk_lines))
 
     print(f"Content has been split into {len(chunks)} chunks.")
