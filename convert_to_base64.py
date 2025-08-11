@@ -8,19 +8,11 @@ MAX_FILE_SIZE_MB = 1
 OUTPUT_FILENAME_TEMPLATE = 'base64_{}.txt'
 
 MAX_B64_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
-# Base64 encoding increases size by ~33%, so we target 3/4 of the max size for the raw text.
 TARGET_RAW_SIZE = int(MAX_B64_SIZE_BYTES * 0.75)
 
 def fetch_content_lines(plain_text_urls, base64_urls):
-    """
-    Fetches content from two lists of URLs.
-    - Plain text URLs are read as is.
-    - Base64 URLs are decoded first.
-    Returns a single, unified list of plain text lines.
-    """
     all_lines = []
     with requests.Session() as session:
-        # --- Process 1: Plain Text URLs ---
         print("\n--- Fetching Plain Text URLs ---")
         for i, url in enumerate(plain_text_urls, 1):
             try:
@@ -37,7 +29,6 @@ def fetch_content_lines(plain_text_urls, base64_urls):
             except requests.exceptions.RequestException as e:
                 print(f"  -> Error: Failed to fetch data from {url}. Reason: {e}")
 
-        # --- Process 2: Pre-encoded Base64 URLs ---
         print("\n--- Fetching and Decoding Base64 URLs ---")
         for i, url in enumerate(base64_urls, 1):
             try:
