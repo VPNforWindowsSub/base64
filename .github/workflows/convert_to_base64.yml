@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # It's good practice to use the latest major version
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5 # It's good practice to use the latest major version
+        uses: actions/setup-python@v5 
         with:
           python-version: '3.x'
 
@@ -28,14 +28,13 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # Stage all changes in the repository (new, modified, AND deleted files)
           git add .
           
-          # Check if there are any changes to commit.
           if [[ -n $(git status --porcelain) ]]; then
             git commit -m "Update Base64 subscription files"
             git push
           else
             echo "No changes to commit."
           fi
+
 
