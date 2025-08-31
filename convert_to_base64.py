@@ -148,7 +148,9 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/theGreatPeter/v2rayNodes/refs/heads/main/nodes.txt",
         "https://raw.githubusercontent.com/SamanGho/v2ray_collector/refs/heads/main/v2tel_links1.txt",
         "https://raw.githubusercontent.com/SamanGho/v2ray_collector/refs/heads/main/v2tel_links2.txt",
-        "https://raw.githubusercontent.com/ShatakVPN/ConfigForge/main/configs/all.txt"
+        "https://raw.githubusercontent.com/ShatakVPN/ConfigForge/main/configs/all.txt",
+        "https://raw.githubusercontent.com/aqayerez/MatnOfficial-VPN/refs/heads/main/MatnOfficial",
+        "https://raw.githubusercontent.com/darkvpnapp/CloudflarePlus/refs/heads/main/proxy"
     ]
     
     base64_urls = [
